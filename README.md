@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # simple swipe slider
 a simple swipe slider basic on jquery,run in mobile(include weixin) and PC
 
@@ -10,7 +9,3 @@ a simple swipe slider basic on jquery,run in mobile(include weixin) and PC
 --Ver 1.0.0 2015/12/21
 功能：本版本只包括垂直的上下划动翻页，有页码
 bug: iphone5(ios 9.2)微信6.3.8中，翻页滚动动画not work
-=======
-# simple-swipe-slider
-a simple swipe slider basic on jquery,run in mobile(include weixin) and PC
->>>>>>> 06898d29dfca9922ab0efb092096fcb181b22688

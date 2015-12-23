@@ -3,7 +3,7 @@
 <head>
 <title>simple swiper</title>
 <meta name="viewport" content="width=device-width, user-scalable=no">
-<link rel="stylesheet" href="style.css?kkkkk">
+<link rel="stylesheet" href="style.css">
 <script src="http://apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
 </head>
 <body>
@@ -44,7 +44,8 @@ $box.height(winH);
 //swipe event
 function handleTouchEvent(event){
     //if (event.touches.length == 1 || event.touches.length == 0){
-    event = event.originalEvent;
+
+    event = event.originalEvent; //jquery对象事件
     //console.log(event.type);
     switch(event.type){
         case "touchstart":
