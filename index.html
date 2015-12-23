@@ -44,8 +44,8 @@ $box.height(winH);
 //swipe event
 function handleTouchEvent(event){
     //if (event.touches.length == 1 || event.touches.length == 0){
-
-    event = event.originalEvent; //jquery对象事件
+    //console.log(event);
+    event = event.originalEvent; //jquery对象事件还原为javascript native event
     //console.log(event.type);
     switch(event.type){
         case "touchstart":
