@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>simple swiper</title>
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<link rel="stylesheet" href="style.css">
+<script src="http://apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
+</head>
+<body>
+
+<div class="container" id="swiper1">
+    <div class="wrapper">
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+        <div class="box">4</div>
+        <div class="box">5</div>
+    </div>
+</div>
+<div class="pager"><span id="thepage"></span>/<span id="pagelength"></span></div>
+
+<script type="text/javascript">
+
+var $window = $(window);
+var winW = $window.width(),
+    winH = $window.height();
+
+var xStart,xEnd,yStart,yEnd;
+var $swipe = $('#swiper1');
+var $boxWrapper = $swipe.find('.wrapper');
+var $box = $swipe.find('.box');
+var boxLength = $box.length;
+
+//init page tips
+var $pageCount = $('#pagelength');
+var $thepage = $('#thepage');
+$pageCount.text(boxLength);
+$thepage.text('1');
+
+//height for boxWrapper & boxes
+$boxWrapper.height(winH*boxLength);
+$box.height(winH);
+
+//swipe event
+function handleTouchEvent(event){
+    //if (event.touches.length == 1 || event.touches.length == 0){
+    //console.log(event);
+    event = event.originalEvent; //jquery对象事件还原为javascript native event
+    //console.log(event.type);
+    switch(event.type){
+        case "touchstart":
+            xStart = event.touches[0].clientX;
+            yStart = event.touches[0].clientY;
+            console.log(xStart,yStart);
+            break;
+        case "touchend":
+            xEnd = event.changedTouches[0].clientX;
+            yEnd = event.changedTouches[0].clientY;
+            var $this = $(this);
+            swipehadle($this,xStart,xEnd,yStart,yEnd);
+            break;
+        case "mousedown":
+            xStart = event.clientX;
+            yStart = event.clientY;
+            console.log(xStart,yStart);
+            break;
+        case "mouseup":
+            xEnd = event.clientX;
+            yEnd = event.clientY;
+            var $this = $(this);
+            swipehadle($this,xStart,xEnd,yStart,yEnd);
+            break;
+        case "touchmove || mousemove":
+            event.preventDefault();
+            break;
+    }
+}
+
+function swipehadle(thebox,xStart,xEnd,yStart,yEnd){
+    var horizontalDistance = xEnd-xStart;
+    var verticalDistance = yEnd-yStart;
+    console.log(xEnd,yEnd);
+
+    var $thebox = thebox;
+    var theIndex = $thebox.index();
+    console.log($thebox);
+
+    if(verticalDistance>30){
+        console.log('向下划');
+        if(theIndex>0){
+            //slider down action
+            $boxWrapper.css({
+                '-webkit-transform': 'translate3d(0,'+(-winH*(theIndex-1))+'px,0)',
+                'transform': 'translate3d(0,'+(-winH*(theIndex-1))+'px,0)'
+            });
+            $thebox.addClass('box-active').siblings().removeClass('box-active');
+
+            //pager show
+            $thepage.text(theIndex);
+        }
+    }else if(verticalDistance<-30){
+        console.log('向上划');
+        if(theIndex<boxLength-1){
+            //slider up action
+            $boxWrapper.css({
+                '-webkit-transform': 'translate3d(0,'+(-winH*(theIndex+1))+'px,0)',
+                'transform': 'translate3d(0,'+(-winH*(theIndex+1))+'px,0)'
+            });
+            $thebox.addClass('box-active').siblings().removeClass('box-active');
+
+            //pager show
+            $thepage.text(theIndex+2);
+        }
+    }
+
+    if(horizontalDistance>30){
+        console.log('向右划');
+    }else if(horizontalDistance<-30){
+        console.log('向左划');
+    }
+}
+
+$('body').on("touchstart touchend touchmove mousedown mouseup mousemove",'.box',handleTouchEvent);
+
+</script>
+</body>
+</html>
