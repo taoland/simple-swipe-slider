@@ -73,12 +73,17 @@ function handleTouchEvent(event){
             swipehadle($this,xStart,xEnd);
             break;
         case "mousedown":
+            event.preventDefault();
             xStart = event.clientX;
             break;
         case "mouseup":
+            event.preventDefault();
             xEnd = event.clientX;
             var $this = $(this);
             swipehadle($this,xStart,xEnd);
+            break;
+        case "mousemove":
+            event.preventDefault();
             break;
     }
 }
