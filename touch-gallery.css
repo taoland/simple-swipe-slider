@@ -1,0 +1,22 @@
+html {height:100%;}
+body {height:100%; margin:0;}
+
+@media (min-width: 992px){
+    .wrapper {width:600px; margin:0 auto;}
+}
+/* gallery */
+.gallery {height: 100%; width: 100%;}
+.gmain, .gthumbs {width: 100%; overflow: hidden; position: relative;}
+
+.gimgs, .gsimgs {
+  position: absolute; left: 0; top: 0; height:100%;
+  -webkit-transition: transform 0.3s ease;
+  transition: transform 0.3s ease;
+}
+.gimgs div, .gsimgs div {float: left; height:100%; -webkit-box-sizing: border-box; box-sizing: border-box; border: 1px solid #ccc;}
+.gimgs div img, .gsimgs div img {width: 100%; vertical-align: top;}
+
+.gsimgs div {opacity:0.6;}
+.gsimgs .active {opacity:1; border-color: #f00;}
+
+.gthumbs {margin-top: 10px; background-color: #fff;}
