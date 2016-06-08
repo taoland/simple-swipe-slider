@@ -1,6 +1,16 @@
 # simple swipe slider
 a simple swipe slider basic on jquery,run in mobile(include weixin) and PC
 
+##文件说明：
+###主文件：
+  index.html 所有javascript都写在页面底部
+  style.css 样式文件
+###去除jquery依赖的版本：
+  index-no-jquery.html
+###延伸版，一个带缩略图的gallery，大图和缩略图上下都可联动：
+  touch-gallery.html
+  touch-gallery.css
+
 ##测试环境：
 ###PC：
 chrome 47、firefox 40、IE10+
