@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>滑动跟随手指横向滑动</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <style type="text/css">
+        html {height:100%;}
+        body {height:100%; margin: 0; color:#000;}
+        .wrapper {width: 100%; height:100%; overflow: hidden; position: relative;}
+        .boxwrap {
+            position: absolute; height: 100%; min-width:100%;
+            font-size: 0;
+        }
+        .boxwrap div {
+            height:100%; display: inline-block;
+            text-align: center; font-size: 18px;
+            -webkit-box-sizing: border-box; box-sizing: border-box;
+            vertical-align:top;
+        }
+
+        .boxwrap div:nth-child(odd) {background-color: #d5d5d5;}
+    </style>
+</head>
+
+<body>
+
+<div class="wrapper">
+    <div id="boxwrap" class="boxwrap">
+        <div>
+            <p>1</p>
+            <a id="aaa" href="#" title="">test</a>
+        </div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+    </div>
+</div>
+
+<script src="http://apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript">
+// define global variable
+var $win = $(window),
+    winW = $win.width(),
+    $boxwrap = $("#boxwrap"),
+    $boxs = $boxwrap.find('div'),
+    theIndex = 0,
+    boxLength = $boxs.length,
+    xStart,
+    moveVal = 0,
+    allMoveVal = null,
+    lastMoveVal = 0,
+    moveFlag = false;
+
+$boxwrap.width(boxLength*winW);
+$boxs.width(winW);
+//jquery .on()
+$boxs.on("touchstart touchend touchmove mousedown mouseup mousemove", swipeAction);
+
+function swipeAction(event){
+    event = event.originalEvent;
+    var $this = $(this);
+    switch(event.type){
+        case "touchstart":
+            event.preventDefault();
+            xStart = event.touches[0].clientX;
+            moveFlag = true;
+            theIndex = $this.index();
+            break;
+        case "touchend":
+            event.preventDefault();
+            $boxwrap.css({
+                '-webkit-transition': 'transform 0.2s ease',
+                'transition': 'transform 0.2s ease'
+            });
+            dragEnd();
+            break;
+        case "touchmove":
+            event.preventDefault();
+            moveVal = event.changedTouches[0].clientX - xStart;
+            //console.log(xStart,moveVal);
+            if (moveFlag) {
+                if (moveVal<0) {
+                    allMoveVal = event.changedTouches[0].clientX - winW*(theIndex+1);
+                }else{
+                    allMoveVal = - winW*theIndex + moveVal;
+                }
+                $boxwrap.css({
+                    '-webkit-transition': '',
+                    'transition': '',
+                    '-webkit-Transform':'translate3d('+allMoveVal+'px,0,0)'
+                });
+            }
+            break;
+        case "mousedown":
+            event.preventDefault();
+            xStart = event.clientX;
+            moveFlag = true;
+            theIndex = $this.index();
+            //console.log(theIndex);
+            break;
+        case "mouseup":
+            event.preventDefault();
+            dragEnd();
+            break;
+        case "mousemove":
+            event.preventDefault();
+            moveVal = event.clientX - xStart;
+            //console.log(xStart,moveVal);
+            if (moveFlag) {
+                if (moveVal<0) {
+                    allMoveVal = event.clientX - winW*(theIndex+1);
+                }else{
+                    allMoveVal = - winW*theIndex + moveVal;
+                }
+                $boxwrap.css({
+                    '-webkit-transition': 'transform 0.2s ease',
+                    'transition': 'transform 0.2s ease',
+                    '-webkit-Transform':'translate3d('+allMoveVal+'px,0,0)'
+                });
+            }
+            break;
+    }
+}
+
+function dragEnd(){
+    //console.log(moveVal);
+    if (-moveVal > 30 && theIndex > -1 && theIndex < boxLength-1) { //向左划大于30
+        $boxwrap.css({
+            '-webkit-Transform':'translate3d('+ (-winW*(theIndex+1)) +'px,0,0)'
+        });
+    }else if (moveVal > 30 && theIndex > 0){
+        $boxwrap.css({
+            '-webkit-Transform':'translate3d('+ -winW*(theIndex-1) +'px,0,0)'
+        });
+    }else {
+        $boxwrap.css({
+            '-webkit-Transform':'translate3d('+ -winW*theIndex +'px,0,0)'
+        });
+    }
+    moveFlag = false;
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<style type="text/css">
+html {height:100%;}
+body {height:100%; margin: 0; color:#000;}
+
+#box {
+    width:30px; height:30px; position:absolute; background-color:blue;
+    -webkit-transition: transform 0.2s ease;
+            transition: transform 0.2s ease;
+}
+</style>
+</head>
+<body>
+<div id="box"></div>
+
+
+<script src="http://apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+    var $win = $(window),
+    winW = $win.width(),
+    $box = $("#box"),
+    xStart,
+    moveVal = 0,
+    moveFlag = false;
+
+    $(window).on("touchstart touchend touchmove", followFinger);
+    function followFinger (event){
+        event = event.originalEvent;
+        var $this = $(this);
+        switch(event.type){
+            case "touchstart":
+                event.preventDefault();
+                xStart = event.touches[0].clientX;
+                yStart = event.touches[0].clientY;
+                moveFlag = true;
+                theIndex = $this.index();
+                break;
+            case "touchend":
+                event.preventDefault();
+                moveFlag = false;
+                break;
+            case "touchmove":
+                event.preventDefault();
+                xMoveVal = event.changedTouches[0].clientX;
+                yMoveVal = event.changedTouches[0].clientY;
+
+                if (moveFlag) {
+
+                    $box.css({
+                        '-webkit-Transform':'translate3d('+xMoveVal+'px,'+yMoveVal+'px,0)'
+                    });
+                }
+                break;
+        }
+    }
+</script>
+</body>
+</html>
