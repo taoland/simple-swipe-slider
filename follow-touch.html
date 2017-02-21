@@ -11,13 +11,17 @@
     .boxwrap {
         position: absolute; height: 100%; min-width:100%;
         font-size: 0;
+        /* -webkit-transition: transform 0.2s ease;
+        transition: transform 0.2s ease; */
     }
     .boxwrap div {
-        height:100%; display: inline-block;
+        height:100%; display: inline-block; vertical-align:top;
         text-align: center; font-size: 18px;
-        -webkit-box-sizing: border-box; box-sizing: border-box;
-        vertical-align:top;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
     }
+
+    .boxwrap .active { }
     .boxwrap div:nth-child(odd) {background-color: #d5d5d5;}
 </style>
 </head>
@@ -27,7 +31,7 @@
 <div class="wrapper">
     <div id="boxwrap" class="boxwrap">
         <div>
-            <p>1</p>
+            <span>1</span>
             <a id="aaa" href="#" title="">test</a>
         </div>
         <div>2</div>
@@ -37,7 +41,7 @@
     </div>
 </div>
 
-<script src="http://10.10.5.3/static/js/jquery.js"></script>
+<script src="http://apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
 <script type="text/javascript">
 // define global variable
 var $win = $(window);
@@ -53,10 +57,7 @@ var winW = $win.width(),
     moveFlag = false;
 
 $boxwrap.width(boxLength*winW);
-for (var i = 0; i < $boxs.length; i++) {
-    console.log($boxs.eq(i));
-    $boxs.eq(i).width(winW);
-}
+$boxs.width(winW);
 //jquery .on()
 $boxs.on("touchstart touchend touchmove mousedown mouseup mousemove", swipeAction);
 
@@ -72,10 +73,6 @@ function swipeAction(event){
             break;
         case "touchend":
             event.preventDefault();
-            $boxwrap.css({
-                '-webkit-transition': 'transform 0.2s ease',
-                'transition': 'transform 0.2s ease'
-            });
             dragEnd();
             break;
         case "touchmove":
@@ -115,8 +112,6 @@ function swipeAction(event){
                     wrapMoveVal = - winW*theIndex + moveVal;
                 }
                 $boxwrap.css({
-                    '-webkit-transition': 'transform 0.2s ease',
-                    'transition': 'transform 0.2s ease',
                     '-webkit-transform':'translate3d('+wrapMoveVal+'px,0,0)'
                 });
             }
@@ -127,27 +122,31 @@ function swipeAction(event){
 function dragEnd(){
     //console.log(moveVal);
     if (-moveVal > 30 && theIndex > -1 && theIndex < boxLength-1) { //向左划大于30
+        $boxs.eq(theIndex+1).addClass('active').prev().removeClass('active');
         $boxwrap.css({
+            'transition-duration': '300ms',
             '-webkit-transform':'translate3d('+ (-winW*(theIndex+1)) +'px,0,0)'
-        });
+        })
     }else if (moveVal > 30 && theIndex > 0){
+        $boxs.eq(theIndex-1).addClass('active').next().removeClass('active');
         $boxwrap.css({
+            'transition-duration': '300ms',
             '-webkit-transform':'translate3d('+ -winW*(theIndex-1) +'px,0,0)'
         });
     }else {
         $boxwrap.css({
+            'transition-duration': '300ms',
             '-webkit-transform':'translate3d('+ -winW*theIndex +'px,0,0)'
         });
     }
     moveFlag = false;
 }
 
-function followfiger(mVal) {
-    $boxwrap.css({
-        '-webkit-transform':'translate3d('+ mVal +'px,0,0)',
-        'transform':'translate3d('+ mVal +'px,0,0)'
-    });
-}
+$boxwrap.on('webkitTransitionEnd transitionend',function(){
+    $(this).css({
+        'transition-duration': '0ms'
+    })
+});
 
 </script>
 
