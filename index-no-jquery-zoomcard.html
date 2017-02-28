@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>simple swiper</title>
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<style>
+html,body {width:100%; height:100%;}
+body {margin:0; overflow: hidden;}
+.container{
+     position: relative; margin:0 auto; width:100%; height:100%; overflow: hidden;
+    background-color: #fff;
+}
+.pager {position: absolute; right: 15px; top: 15px; z-index: 11;}
+
+.card {
+    position: absolute; left: 0; top: 0;
+    width:100%; height:100%;
+    text-align: center; background-color: #09c;
+    -webkit-transition-duration: 600ms;
+    transition-duration: 600ms;
+    /* 时间过长容易误操作 */
+    -webkit-transform-origin: top center;
+    transform-origin: top center;
+
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    perspective: 1000;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <div class="card">1</div>
+    <div class="card">2</div>
+    <div class="card">3</div>
+    <div class="card">4</div>
+    <div class="card">5</div>
+    <div class="pager">
+        <span id="thepage"></span>/<span id="pagelength"></span>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+var winW = window.innerWidth,
+    winH = window.innerHeight,
+    container = document.querySelector('.container'),
+    card = document.querySelectorAll('.card');
+
+/* browser */
+var isMobile = /iPad|iPod|iPhone|Android/.test(navigator.userAgent);
+if(!isMobile){
+    container.style.width = '600px';
+}
+
+var cardLength = card.length;
+var xStart,xEnd,yStart,yEnd;
+
+//init page tips
+var pageCount = document.querySelector('#pagelength');
+var thepage = document.querySelector('#thepage');
+pageCount.innerHTML = cardLength ;
+thepage.innerHTML = 1;
+
+for (var i = cardLength - 1; i >= 0; i--) {
+    //card[i].style.height = winH+'px';
+    card[i].style.zIndex = i+1;
+    card[i].dataset.index = i;
+
+    if (i>0) {
+        card[i].style.transform = "translateY("+winH+"px)";
+    }
+
+    card[i].addEventListener('touchstart', handleTouchEvent, false);
+    card[i].addEventListener('mousedown', handleTouchEvent, false);
+    card[i].addEventListener('touchend', handleTouchEvent, false);
+    card[i].addEventListener('mouseup', handleTouchEvent, false);
+    card[i].addEventListener('touchmove', handleTouchEvent, false);
+}
+
+//$('body').on("touchstart touchend touchmove mousedown mouseup mousemove",'.card',handleTouchEvent);
+
+//swipe event
+function handleTouchEvent(event){
+    //if (event.touches.length == 1 || event.touches.length == 0){
+    //console.log(event);
+    //event = event.originalEvent; //jquery对象事件还原为javascript native event
+    //console.log(event.type,this);
+    switch(event.type){
+        case "touchstart":
+            xStart = event.touches[0].clientX;
+            yStart = event.touches[0].clientY;
+            //console.log(xStart,yStart);
+            break;
+        case "touchend":
+            xEnd = event.changedTouches[0].clientX;
+            yEnd = event.changedTouches[0].clientY;
+            var thecard = this;
+            swipehadle(thecard,xStart,xEnd,yStart,yEnd);
+            break;
+        case "mousedown":
+            xStart = event.clientX;
+            yStart = event.clientY;
+            //console.log(xStart,yStart);
+            break;
+        case "mouseup":
+            xEnd = event.clientX;
+            yEnd = event.clientY;
+            var thecard = this;
+            swipehadle(thecard,xStart,xEnd,yStart,yEnd);
+            break;
+        case "touchmove":
+            event.preventDefault();
+            break;
+    }
+}
+
+function swipehadle(thecard,xStart,xEnd,yStart,yEnd){
+    var horizontalDistance = xEnd-xStart;
+    var verticalDistance = yEnd-yStart;
+    //console.log(xEnd,yEnd);
+
+    var theCardIndex = thecard.dataset.index;
+
+    if(verticalDistance>30){
+        console.log('下划');
+        if (theCardIndex>0) {
+            thepage.innerHTML = theCardIndex;
+            thecard.style.transform = "translateY("+winH+"px)";
+            //判断previousSibling是否为TEXT_NODE(空格)
+            if (thecard.previousSibling.nodeType == 3) {
+                thecard.previousSibling.previousSibling.style.transform = "scale(1)";
+            }else{
+                thecard.previousSibling.style.transform = "scale(1)";
+            }
+        }
+    }else if(verticalDistance<-30){
+        console.log('上划',thecard.nextSibling);
+        if (theCardIndex<cardLength-1) {
+            thepage.innerHTML = (theCardIndex-0)+2;
+            thecard.style.transform = "scale(0.5)";
+            //判断nextSibling是否为TEXT_NODE(空格)
+            if (thecard.nextSibling.nodeType == 3) {
+                thecard.nextSibling.nextSibling.style.transform = "translateY(0)";
+            }else{
+                thecard.nextSibling.style.transform = "translateY(0)";
+            }
+        }
+    }
+
+    if(horizontalDistance>30){
+        console.log('右划');
+    }else if(horizontalDistance<-30){
+        console.log('左划');
+    }
+}
+
+</script>
+</body>
+</html>

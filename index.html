@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<div class="container" id="swiper1">
+<div class="container">
     <div class="wrapper">
         <div class="box">1</div>
         <div class="box">2</div>
@@ -17,7 +17,7 @@
         <div class="box">5</div>
     </div>
 </div>
-<div class="pager"><span id="thepage"></span>/<span id="pagelength"></span></div>
+<div class="pager"><span id="pageIndex"></span>/<span id="pageCount"></span></div>
 
 <script type="text/javascript">
 
@@ -26,20 +26,22 @@ var winW = $window.width(),
     winH = $window.height();
 
 var xStart,xEnd,yStart,yEnd;
-var $swipe = $('#swiper1');
-var $boxWrapper = $swipe.find('.wrapper');
-var $box = $swipe.find('.box');
+var $swipeWrap = $('.container');
+var $boxWrapper = $swipeWrap.find('.wrapper');
+var $box = $swipeWrap.find('.box');
 var boxLength = $box.length;
 
 //init page tips
-var $pageCount = $('#pagelength');
-var $thepage = $('#thepage');
+var $pageCount = $('#pageCount');
+var $pageIndex = $('#pageIndex');
 $pageCount.text(boxLength);
-$thepage.text('1');
+$pageIndex.text('1');
 
 //height for boxWrapper & boxes
 $boxWrapper.height(winH*boxLength);
 $box.height(winH);
+
+$swipeWrap.on("touchstart touchend touchmove mousedown mouseup",'.box',handleTouchEvent);
 
 //swipe event
 function handleTouchEvent(event){
@@ -96,7 +98,7 @@ function swipehadle(thebox,xStart,xEnd,yStart,yEnd){
             $thebox.addClass('box-active').siblings().removeClass('box-active');
 
             //pager show
-            $thepage.text(theIndex);
+            $pageIndex.text(theIndex);
         }
     }else if(verticalDistance<-30){
         console.log('向上划');
@@ -109,7 +111,7 @@ function swipehadle(thebox,xStart,xEnd,yStart,yEnd){
             $thebox.addClass('box-active').siblings().removeClass('box-active');
 
             //pager show
-            $thepage.text(theIndex+2);
+            $pageIndex.text(theIndex+2);
         }
     }
 
@@ -120,7 +122,6 @@ function swipehadle(thebox,xStart,xEnd,yStart,yEnd){
     }
 }
 
-$('body').on("touchstart touchend touchmove mousedown mouseup",'.box',handleTouchEvent);
 
 </script>
 </body>
