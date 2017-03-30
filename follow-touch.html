@@ -73,11 +73,12 @@ function swipeAction(event){
             break;
         case "touchend":
             event.preventDefault();
+            moveVal = event.changedTouches[0].clientX - xStart;//get moveVal again
             dragEnd();
             break;
         case "touchmove":
             event.preventDefault();
-            moveVal = event.changedTouches[0].clientX - xStart;
+            moveVal = event.changedTouches[0].clientX - xStart;//get moveVal
             //console.log(xStart,moveVal);
             if (moveFlag) {
                 if (moveVal<0) {
