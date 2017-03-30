@@ -21,6 +21,9 @@ chrome 47、firefox 40、IE10+
 魅蓝note自带浏览器及微信6.3.8、iphone5(ios 9.2)自带浏览器及微信6.3.8
 
 ## update log
+### Ver 1.2.1 2017/03/30
+  修复点击错误移动的bug for file: follow-touch.html
+  
 ### Ver 1.2.0 2016/06/16
   更新了元素跟随touch或鼠标事件
 
