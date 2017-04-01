@@ -1,127 +1,192 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>simple swiper</title>
-<meta name="viewport" content="width=device-width, user-scalable=no">
-<link rel="stylesheet" href="style.css">
-<script src="http://apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
+<title>横向滑动</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style type="text/css">
+    html {width:100%; height:100%;}
+    body {width:100%; height:100%; margin: 0; color:#000;
+        font:normal 16px/1.8em "WenQuanYi Micro Hei", "Microsoft Yahei",sans-serif, Arial;
+    }
+    .wrapper {width: 100%; height:100%; overflow: hidden; position: relative;}
+    .boxwrap {
+        position: absolute; height: 100%; min-width:100%;
+        font-size: 0;
+        /* -webkit-transition: transform 0.2s ease;
+        transition: transform 0.2s ease; */
+    }
+    .boxwrap div {
+        height:100%; display: inline-block; vertical-align:top;
+        text-align: center; font-size: 18px;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    .boxwrap .active { }
+    .boxwrap div:nth-child(odd) {background-color: #d5d5d5;}
+    .info {text-align: left; width: 50%; margin: 0 auto; line-height: 2em;}
+</style>
 </head>
+
 <body>
 
-<div class="container" id="swiper1">
-    <div class="wrapper">
-        <div class="box">1</div>
-        <div class="box">2</div>
-        <div class="box">3</div>
-        <div class="box">4</div>
-        <div class="box">5</div>
+<div class="wrapper">
+    <div id="boxwrap" class="boxwrap">
+        <div>
+            <h1>1</h1>
+            <h2>鼠标或手指向左滑动</h2>
+            <p class="info">完整样例代码文件请至：<a href="https://github.com/taoland/simple-swipe-slider">https://github.com/taoland/simple-swipe-slider</a><br />
+            <strong>1.主文件：</strong><br />
+                follow-touch-slider-landscape.html 横向滑动版 <br />follow-touch-slider-vertical.html 竖向滑动版 style.css 样式文件<br />
+
+            <strong>2.不jquery依赖的javascript版本：</strong><br />
+
+                demo-no-jquery-slider.html<br />
+
+            <strong>3.gallery DEMO，</strong>大图和缩略图上下都可联动：<br />
+
+                demo-gallery.html gallery.css<br />
+
+            <strong>4.其他：</strong><br />
+
+                follow-touch-square.html 小方块跟随touch事件的demo
+            </p>
+        </div>
+        <div><h2>2</h2></div>
+        <div><h2>3</h2></div>
+        <div><h2>4</h2></div>
+        <div><h2>5</h2></div>
     </div>
 </div>
-<div class="pager"><span id="thepage"></span>/<span id="pagelength"></span></div>
 
+<script src="http://apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
 <script type="text/javascript">
+// define global variable
+var $win = $(window);
+var winW = $win.width(),
+    $boxwrap = $("#boxwrap"),
+    $boxs = $boxwrap.find('div'),
+    theIndex = 0,
+    boxLength = $boxs.length,
+    xStart,
+    moveVal = 0,
+    wrapMoveVal = null,
+    lastMoveVal = 0,
+    moveFlag = false,
+    lastTouchTime = 0,
+    defaultGap = 300, //翻页的最小间隔时间，阻止翻页太快
+    theGaptime;
 
-var $window = $(window);
-var winW = $window.width(),
-    winH = $window.height();
+$boxwrap.width(boxLength*winW);
+$boxs.width(winW);
+//jquery .on()
+$boxs.on("touchstart touchend touchmove mousedown mouseup mousemove", swipeAction);
 
-var xStart,xEnd,yStart,yEnd;
-var $swipe = $('#swiper1');
-var $boxWrapper = $swipe.find('.wrapper');
-var $box = $swipe.find('.box');
-var boxLength = $box.length;
-
-//init page tips
-var $pageCount = $('#pagelength');
-var $thepage = $('#thepage');
-$pageCount.text(boxLength);
-$thepage.text('1');
-
-//height for boxWrapper & boxes
-$boxWrapper.height(winH*boxLength);
-$box.height(winH);
-
-//swipe event
-function handleTouchEvent(event){
-    //if (event.touches.length == 1 || event.touches.length == 0){
-    //console.log(event);
-    event = event.originalEvent; //jquery对象事件还原为javascript native event
-    //console.log(event.type);
+function swipeAction(event){
+    event = event.originalEvent;
+    var $this = $(this);
     switch(event.type){
         case "touchstart":
+            event.preventDefault();
             xStart = event.touches[0].clientX;
-            yStart = event.touches[0].clientY;
-            console.log(xStart,yStart);
+            moveFlag = true;
+            theIndex = $this.index();
+            var touchStartDate = new Date();
+            var touchStartTime = touchStartDate.getTime();
+            theGaptime = touchStartTime-lastTouchTime;
             break;
         case "touchend":
-            xEnd = event.changedTouches[0].clientX;
-            yEnd = event.changedTouches[0].clientY;
-            var $this = $(this);
-            swipehadle($this,xStart,xEnd,yStart,yEnd);
+            event.preventDefault();
+            moveVal = event.changedTouches[0].clientX - xStart;//get moveVal again
+            var lastDate = new Date();
+            lastTouchTime = lastDate.getTime();
+            if (theGaptime>defaultGap) {
+                dragEnd();
+            }
+            break;
+        case "touchmove":
+            event.preventDefault();
+            moveVal = event.changedTouches[0].clientX - xStart;//get moveVal
+            //console.log(xStart,moveVal);
+            if (moveFlag && theGaptime>defaultGap) {
+                if (moveVal<0) {
+                    wrapMoveVal = moveVal - winW*(theIndex);
+                }else{
+                    wrapMoveVal = - winW*theIndex + moveVal;
+                }
+                $boxwrap.css({
+                    '-webkit-transform':'translate3d('+wrapMoveVal+'px,0,0)'
+                });
+            }
             break;
         case "mousedown":
+            event.preventDefault();
             xStart = event.clientX;
-            yStart = event.clientY;
-            console.log(xStart,yStart);
+            moveFlag = true;
+            theIndex = $this.index();
+            var touchStartDate = new Date();
+            var touchStartTime = touchStartDate.getTime();
+            theGaptime = touchStartTime-lastTouchTime;
+            //console.log(theIndex);
             break;
         case "mouseup":
-            xEnd = event.clientX;
-            yEnd = event.clientY;
-            var $this = $(this);
-            swipehadle($this,xStart,xEnd,yStart,yEnd);
-            break;
-        case "touchmove || mousemove":
             event.preventDefault();
+            moveVal = event.clientX - xStart;
+            var lastDate = new Date();
+            lastTouchTime = lastDate.getTime();
+            if (theGaptime>defaultGap) {
+                dragEnd();
+            }
             break;
+        case "mousemove":
+            event.preventDefault();
+            moveVal = event.clientX - xStart;
+            //console.log(xStart,moveVal);
+            if (moveFlag && theGaptime>defaultGap){
+                if (moveVal<0) {
+                    wrapMoveVal = moveVal - winW*(theIndex);
+                }else{
+                    wrapMoveVal = - winW*theIndex + moveVal;
+                }
+                $boxwrap.css({
+                    '-webkit-transform':'translate3d('+wrapMoveVal+'px,0,0)'
+                });
+            }
+        break;
     }
 }
 
-function swipehadle(thebox,xStart,xEnd,yStart,yEnd){
-    var horizontalDistance = xEnd-xStart;
-    var verticalDistance = yEnd-yStart;
-    console.log(xEnd,yEnd);
-
-    var $thebox = thebox;
-    var theIndex = $thebox.index();
-    console.log($thebox);
-
-    if(verticalDistance>30){
-        console.log('向下划');
-        if(theIndex>0){
-            //slider down action
-            $boxWrapper.css({
-                '-webkit-transform': 'translate3d(0,'+(-winH*(theIndex-1))+'px,0)',
-                'transform': 'translate3d(0,'+(-winH*(theIndex-1))+'px,0)'
-            });
-            $thebox.addClass('box-active').siblings().removeClass('box-active');
-
-            //pager show
-            $thepage.text(theIndex);
-        }
-    }else if(verticalDistance<-30){
-        console.log('向上划');
-        if(theIndex<boxLength-1){
-            //slider up action
-            $boxWrapper.css({
-                '-webkit-transform': 'translate3d(0,'+(-winH*(theIndex+1))+'px,0)',
-                'transform': 'translate3d(0,'+(-winH*(theIndex+1))+'px,0)'
-            });
-            $thebox.addClass('box-active').siblings().removeClass('box-active');
-
-            //pager show
-            $thepage.text(theIndex+2);
-        }
+function dragEnd(){
+    //console.log(moveVal);
+    if (-moveVal > 30 && theIndex > -1 && theIndex < boxLength-1) { //向左划大于30
+        $boxs.eq(theIndex+1).addClass('active').prev().removeClass('active');
+        $boxwrap.css({
+            'transition-duration': '300ms',
+            '-webkit-transform':'translate3d('+ (-winW*(theIndex+1)) +'px,0,0)'
+        })
+    }else if (moveVal > 30 && theIndex > 0){
+        $boxs.eq(theIndex-1).addClass('active').next().removeClass('active');
+        $boxwrap.css({
+            'transition-duration': '300ms',
+            '-webkit-transform':'translate3d('+ -winW*(theIndex-1) +'px,0,0)'
+        });
+    }else {
+        $boxwrap.css({
+            'transition-duration': '300ms',
+            '-webkit-transform':'translate3d('+ -winW*theIndex +'px,0,0)'
+        });
     }
-
-    if(horizontalDistance>30){
-        console.log('向右划');
-    }else if(horizontalDistance<-30){
-        console.log('向左划');
-    }
+    moveFlag = false;
 }
 
-$('body').on("touchstart touchend touchmove mousedown mouseup mousemove",'.box',handleTouchEvent);
+$boxwrap.on('webkitTransitionEnd transitionend',function(){
+    $(this).css({
+        'transition-duration': '0ms'
+    })
+});
 
 </script>
+
 </body>
 </html>
