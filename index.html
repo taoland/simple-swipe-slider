@@ -10,16 +10,20 @@
     body {width:100%; height:100%; margin: 0; color:#000;
         font:normal 16px/1.8em "WenQuanYi Micro Hei", "Microsoft Yahei",sans-serif, Arial;
     }
+    h1,h2 {margin: 0;}
     .wrapper {width: 100%; height:100%; overflow: hidden; position: relative;}
     .boxwrap {
-        position: absolute; height: 100%; width:100%;
+        position: absolute; height: 100%; font-size: 0;
     }
     .boxwrap div {
-        height:100%; display: inline-block; vertical-align:top;
-        text-align: center;
+        display: inline-block; vertical-align: top;
+        height:100%; text-align: center;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
+        font-size: 16px;
     }
+
+    .boxwrap div h1, .boxwrap div h2 {margin-bottom: 10px;}
 
     .boxwrap .active { }
     .boxwrap div:nth-child(odd) {background-color: #d5d5d5;}
