@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>滑动跟随手指横向滑动</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style type="text/css">
+    html {width:100%; height:100%;}
+    body {width:100%; height:100%; margin: 0; color:#000;}
+    .wrapper {width: 100%; height:100%; overflow: hidden; position: relative;}
+    .boxwrap {
+        position: absolute; height: 100%; min-width:100%;
+        font-size: 0;
+        /* -webkit-transition: transform 0.2s ease;
+        transition: transform 0.2s ease; */
+    }
+    .boxwrap div {
+        height:100%; display: inline-block; vertical-align:top;
+        text-align: center; font-size: 18px;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    .boxwrap .active { }
+    .boxwrap div:nth-child(odd) {background-color: #d5d5d5;}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+    <div id="boxwrap" class="boxwrap">
+        <div>
+            <span>1</span>
+        </div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+    </div>
+</div>
+
+<script src="http://apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript">
+// define global variable
+var $win = $(window);
+var winW = $win.width(),
+    $boxwrap = $("#boxwrap"),
+    $boxs = $boxwrap.find('div'),
+    theIndex = 0,
+    boxLength = $boxs.length,
+    xStart,
+    moveVal = 0,
+    wrapMoveVal = null,
+    lastMoveVal = 0,
+    moveFlag = false,
+    lastTouchTime = 0,
+    defaultGap = 300, //翻页的最小间隔时间，阻止翻页太快
+    theGaptime;
+
+$boxwrap.width(boxLength*winW);
+$boxs.width(winW);
+//jquery .on()
+$boxs.on("touchstart touchend touchmove mousedown mouseup mousemove", swipeAction);
+
+function swipeAction(event){
+    event = event.originalEvent;
+    var $this = $(this);
+    switch(event.type){
+        case "touchstart":
+            event.preventDefault();
+            xStart = event.touches[0].clientX;
+            moveFlag = true;
+            theIndex = $this.index();
+            var touchStartDate = new Date();
+            var touchStartTime = touchStartDate.getTime();
+            theGaptime = touchStartTime-lastTouchTime;
+            break;
+        case "touchend":
+            event.preventDefault();
+            moveVal = event.changedTouches[0].clientX - xStart;//get moveVal again
+            var lastDate = new Date();
+            lastTouchTime = lastDate.getTime();
+            if (theGaptime>defaultGap) {
+                dragEnd();
+            }
+            break;
+        case "touchmove":
+            event.preventDefault();
+            moveVal = event.changedTouches[0].clientX - xStart;//get moveVal
+            //console.log(xStart,moveVal);
+            if (moveFlag && theGaptime>defaultGap) {
+                if (moveVal<0) {
+                    wrapMoveVal = moveVal - winW*(theIndex);
+                }else{
+                    wrapMoveVal = - winW*theIndex + moveVal;
+                }
+                $boxwrap.css({
+                    '-webkit-transform':'translate3d('+wrapMoveVal+'px,0,0)'
+                });
+            }
+            break;
+        case "mousedown":
+            event.preventDefault();
+            xStart = event.clientX;
+            moveFlag = true;
+            theIndex = $this.index();
+            var touchStartDate = new Date();
+            var touchStartTime = touchStartDate.getTime();
+            theGaptime = touchStartTime-lastTouchTime;
+            //console.log(theIndex);
+            break;
+        case "mouseup":
+            event.preventDefault();
+            moveVal = event.clientX - xStart;
+            var lastDate = new Date();
+            lastTouchTime = lastDate.getTime();
+            if (theGaptime>defaultGap) {
+                dragEnd();
+            }
+            break;
+        case "mousemove":
+            event.preventDefault();
+            moveVal = event.clientX - xStart;
+            //console.log(xStart,moveVal);
+            if (moveFlag && theGaptime>defaultGap){
+                if (moveVal<0) {
+                    wrapMoveVal = moveVal - winW*(theIndex);
+                }else{
+                    wrapMoveVal = - winW*theIndex + moveVal;
+                }
+                $boxwrap.css({
+                    '-webkit-transform':'translate3d('+wrapMoveVal+'px,0,0)'
+                });
+            }
+        break;
+    }
+}
+
+function dragEnd(){
+    //console.log(moveVal);
+    if (-moveVal > 30 && theIndex > -1 && theIndex < boxLength-1) { //向左划大于30
+        $boxs.eq(theIndex+1).addClass('active').prev().removeClass('active');
+        $boxwrap.css({
+            'transition-duration': '300ms',
+            '-webkit-transform':'translate3d('+ (-winW*(theIndex+1)) +'px,0,0)'
+        })
+    }else if (moveVal > 30 && theIndex > 0){
+        $boxs.eq(theIndex-1).addClass('active').next().removeClass('active');
+        $boxwrap.css({
+            'transition-duration': '300ms',
+            '-webkit-transform':'translate3d('+ -winW*(theIndex-1) +'px,0,0)'
+        });
+    }else {
+        $boxwrap.css({
+            'transition-duration': '300ms',
+            '-webkit-transform':'translate3d('+ -winW*theIndex +'px,0,0)'
+        });
+    }
+    moveFlag = false;
+}
+
+$boxwrap.on('webkitTransitionEnd transitionend',function(){
+    $(this).css({
+        'transition-duration': '0ms'
+    })
+});
+
+</script>
+
+</body>
+</html>
