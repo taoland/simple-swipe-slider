@@ -7,8 +7,8 @@ var simpleSwiper = function(theoptions){
 
     var options = {
         container: theoptions.container,
-        defaultGap: 300,
-        swipeDistance: 50
+        defaultGap:  (typeof theoptions.defaultGap === 'undefined') ? 300: theoptions.defaultGap,
+        swipeDistance: (typeof theoptions.swipeDistance === 'undefined') ? 50:theoptions.swipeDistance
     }
 
     var $swpage =  $(options.container).find('.swpage'),
