@@ -24,13 +24,13 @@ var simpleSwiper = function(theoptions){
     //jquery .on()
     $swpage.on("touchstart touchend touchmove mousedown mouseup", swipeAction);
 
-    function swipeAction(event){
-        event = event.originalEvent;
+    function swipeAction(e){
+        // event = event.originalEvent;
         var $this = $(this);
         switch(event.type){
             case "touchstart":
-                event.preventDefault();
-                yStart = event.touches[0].clientY;
+                // e.originalEvent.preventDefault();
+                yStart = e.originalEvent.touches[0].clientY;
                 theIndex = $this.index();
                 //console.log(theIndex);
                 var touchStartDate = new Date();
@@ -38,8 +38,8 @@ var simpleSwiper = function(theoptions){
                 theGaptime = touchStartTime-lastTouchTime;
                 break;
             case "touchend":
-                event.preventDefault();
-                moveVal = event.changedTouches[0].clientY - yStart;//get moveVal again
+                // e.originalEvent.preventDefault();
+                moveVal = e.originalEvent.changedTouches[0].clientY - yStart;//get moveVal again
                 var lastDate = new Date();
                 lastTouchTime = lastDate.getTime();
                 if (theGaptime > options.defaultGap) {
@@ -47,8 +47,8 @@ var simpleSwiper = function(theoptions){
                 }
                 break;
             case "touchmove":
-                event.preventDefault();
-                moveVal = event.changedTouches[0].clientY - yStart;//get moveVal
+                // e.originalEvent.preventDefault();
+                moveVal = e.originalEvent.changedTouches[0].clientY - yStart;//get moveVal
                 console.log(theIndex, yStart,moveVal);
 
                 if (theGaptime> options.defaultGap) {
@@ -73,8 +73,8 @@ var simpleSwiper = function(theoptions){
                 }
                 break;
             case "mousedown":
-                event.preventDefault();
-                yStart = event.clientY;
+                // e.preventDefault();
+                yStart = e.clientY;
                 theIndex = $this.index();
                 var touchStartDate = new Date();
                 var touchStartTime = touchStartDate.getTime();
@@ -82,7 +82,7 @@ var simpleSwiper = function(theoptions){
 
                 console.log($this);
                 $this.on("mousemove", function(e) {
-                    e.preventDefault();
+                    // e.preventDefault();
                     moveVal = e.clientY - yStart;
                     console.log(yStart,moveVal, theGaptime);
                     if (theGaptime> options.defaultGap) {
@@ -108,7 +108,7 @@ var simpleSwiper = function(theoptions){
                 });
                 break;
             case "mouseup":
-                event.preventDefault();
+                // e.preventDefault();
                 moveVal = event.clientY - yStart;
                 var lastDate = new Date();
                 lastTouchTime = lastDate.getTime();
@@ -122,7 +122,8 @@ var simpleSwiper = function(theoptions){
 
     function dragEnd(){
 
-        if (-moveVal > options.swipeDistance && theIndex > -1 && theIndex < spLength-1) {     console.log("前进2");
+        if (-moveVal > options.swipeDistance && theIndex > -1 && theIndex < spLength-1) {
+            console.log("前进2");
             $swpage.eq(theIndex).css({
                 'transition-duration': '300ms',
                 '-webkit-transform':'translate3d(0,'+ (-winH) +'px,0)'
